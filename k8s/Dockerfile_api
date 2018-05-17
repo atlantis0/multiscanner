@@ -1,10 +1,12 @@
 FROM python:3.6
-MAINTAINER Austin West awest1339
+MAINTAINER Sirack Hailu
 
 ENV PYTHON_VER 3.6.2
 
-COPY . /opt/multiscanner
-COPY ./docker_utils/*.ini /opt/multiscanner/
+# copy peoject files, iteratively 
+COPY ../ /opt/multiscanner 
+# copy configuration files
+COPY ../docker_utils/*.ini /opt/multiscanner/
 
 WORKDIR /opt/multiscanner
 RUN ./install.sh
