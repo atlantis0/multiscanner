@@ -4,9 +4,9 @@ MAINTAINER Sirack Hailu
 ENV PYTHON_VER 3.6.2
 
 # copy peoject files, iteratively 
-COPY ../ /opt/multiscanner 
+COPY . /opt/multiscanner 
 # copy configuration files
-COPY ../docker_utils/*.ini /opt/multiscanner/
+COPY ./docker_utils/*.ini /opt/multiscanner/
 
 WORKDIR /opt/multiscanner
 RUN ./install.sh
