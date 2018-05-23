@@ -140,7 +140,7 @@ api_config = multiscanner.common.parse_config(api_config_object)
 from celery_worker import multiscanner_celery, ssdeep_compare_celery
 from ssdeep_analytics import SSDeepAnalytic
 
-db = database.Database(config=api_config.get('Database'), 
+db = database.Datastore(config=api_config.get('Database'), 
 goog_cred_file=os.path.join(MS_WD, 'pwned-google-cred.json'))
 # To run under Apache, we need to set up the DB outside of __main__
 db.init_db()
