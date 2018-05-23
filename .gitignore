@@ -4,6 +4,9 @@ storage.ini
 api_config.ini
 web_config.ini
 
+# igonre json files
+*.json
+
 #Default report location
 report.json
 

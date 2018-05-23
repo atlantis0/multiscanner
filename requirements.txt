@@ -44,3 +44,10 @@ flake8
 pre-commit
 #Required by utils
 tqdm
+
+# google cloud datastore
+google-cloud-datastore
+# google cloud bucket
+google-cloud-storage
+# google pub-sub
+google-cloud-pubsub

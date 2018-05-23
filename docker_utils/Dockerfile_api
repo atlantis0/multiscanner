@@ -7,6 +7,10 @@ ENV PYTHON_VER 3.6.2
 COPY . /opt/multiscanner 
 # copy configuration files
 COPY ./docker_utils/*.ini /opt/multiscanner/
+COPY ./docker_utils/pwned-google-cred.json /opt/multiscanner/
+
+# set env variable
+ENV GOOGLE_APPLICATION_CREDENTIALS=/opt/multiscanner/pwned-google-cred.json
 
 WORKDIR /opt/multiscanner
 RUN ./install.sh

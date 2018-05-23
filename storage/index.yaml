@@ -1,0 +1,8 @@
+# to create index run the command below
+# gcloud datastore create-indexes indexes.yaml
+
+indexes:
+- kind: Task
+  properties:
+  - name: sample_id
+  - name: timestamp

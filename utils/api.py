@@ -75,10 +75,16 @@ if MS_WD not in sys.path:
 import common
 import elasticsearch_storage
 import multiscanner
-import sql_driver as database
+# import sql_driver as database
+import datastore as database
 from utils.pdf_generator import create_pdf_document
 from utils.stix2_generator import parse_json_report_to_stix2_bundle
 
+# Imports the Google Cloud client library
+from google.cloud import storage
+
+# Imports the Google Cloud client library
+from google.cloud import pubsub_v1
 
 TASK_NOT_FOUND = {'Message': 'No task or report with that ID found!'}
 INVALID_REQUEST = {'Message': 'Invalid request parameters'}
@@ -134,9 +140,20 @@ api_config = multiscanner.common.parse_config(api_config_object)
 from celery_worker import multiscanner_celery, ssdeep_compare_celery
 from ssdeep_analytics import SSDeepAnalytic
 
-db = database.Database(config=api_config.get('Database'))
+db = database.Database(config=api_config.get('Database'), 
+goog_cred_file=os.path.join(MS_WD, 'pwned-google-cred.json'))
 # To run under Apache, we need to set up the DB outside of __main__
 db.init_db()
+
+
+# set credentials
+# used for google storage and pub/sub or
+# for any service that connects to google cloud
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(MS_WD, 'pwned-google-cred.json')
+
+upload_bucket_folder = api_config['api']['upload_bucket'] 
+pub_sub_project = api_config['api']['pub_sub_project']
+pub_sub_topic = api_config['api']['pub_sub_topic']
 
 storage_conf = multiscanner.common.get_config_path(multiscanner.CONFIG, 'storage')
 storage_handler = multiscanner.storage.StorageHandler(configfile=storage_conf)
@@ -357,6 +374,32 @@ def delete_task(task_id):
     return jsonify({'Message': 'Deleted'})
 
 
+def upload_bucket(file_, destination_name):
+
+    # Instantiates a client
+    storage_client = storage.Client()
+    # The name for the new bucket
+    bucket = storage_client.get_bucket(upload_bucket_folder)
+    blob = bucket.blob(destination_name)
+
+    blob.upload_from_filename(file_)
+
+    print('File {} uploaded to {}.'.format(
+        file_,
+        destination_name))
+    url = "https://storage.googleapis.com/{0}/{1}".format(upload_bucket_folder, destination_name)
+    return url
+
+def push_to_pub_sub(data_):
+    # Instantiates a client
+    publisher = pubsub_v1.PublisherClient()
+
+    # topic path
+    topic_path = publisher.topic_path(pub_sub_project, pub_sub_topic)
+    # publish
+    publisher.publish(topic_path, data=json.dumps(data_))
+    print('Published messages.')
+
 def save_hashed_filename(f, zipped=False):
     '''
     Save given file to the upload folder, with its SHA256 hash as its filename.
@@ -373,7 +416,11 @@ def save_hashed_filename(f, zipped=False):
         shutil.copy2(f.name, full_path)
     else:
         f.save(file_path)
-    return (f_name, full_path)
+    
+    # upload to bucket
+    url_ = upload_bucket(full_path, f_name)
+
+    return (f_name, full_path, url_)
 
 
 class InvalidScanTimeFormatError(ValueError):
@@ -400,7 +447,7 @@ def import_task(file_):
     return task_id
 
 
-def queue_task(original_filename, f_name, full_path, metadata, rescan=False):
+def queue_task(original_filename, f_name, full_path, metadata, url, rescan=False):
     '''
     Queue up a single new task, for a single non-archive file.
     '''
@@ -417,9 +464,20 @@ def queue_task(original_filename, f_name, full_path, metadata, rescan=False):
 
     if DISTRIBUTED:
         # Publish the task to Celery
-        multiscanner_celery.delay(full_path, original_filename,
-                                  task_id, f_name, metadata,
-                                  config=multiscanner.CONFIG)
+        # multiscanner_celery.delay(full_path, original_filename,
+        #                           task_id, f_name, metadata,
+        #                           config=multiscanner.CONFIG)
+        # we need to push data to queue, 
+        data = {
+            'original_filename' : original_filename.encode('utf-8'),
+            'f_name': f_name.encode('utf-8'),
+            'full_path': full_path.encode('utf-8'),
+            'metadata': metadata,
+            'url': url.encode('utf-8'),
+            'rescan': rescan
+        }
+        # push
+        push_to_pub_sub(data)
     else:
         # Put the task on the queue
         work_queue.put((full_path, original_filename, task_id, f_name, metadata))
@@ -505,8 +563,8 @@ def create_task():
                 z.extractall(path=extract_dir, pwd=password)
                 for uzfile in z.namelist():
                     unzipped_file = open(os.path.join(extract_dir, uzfile))
-                    f_name, full_path = save_hashed_filename(unzipped_file, True)
-                    tid = queue_task(uzfile, f_name, full_path, metadata, rescan=rescan)
+                    f_name, full_path, url = save_hashed_filename(unzipped_file, True)
+                    tid = queue_task(uzfile, f_name, full_path, metadata, url, rescan=rescan)
                     task_id_list.append(tid)
             except RuntimeError as e:
                 msg = "ERROR: Failed to extract " + str(file_) + ' - ' + str(e)
@@ -520,8 +578,8 @@ def create_task():
                 r.extractall(path=extract_dir, pwd=password)
                 for urfile in r.namelist():
                     unrarred_file = open(os.path.join(extract_dir, urfile))
-                    f_name, full_path = save_hashed_filename(unrarred_file, True)
-                    tid = queue_task(urfile, f_name, full_path, metadata, rescan=rescan)
+                    f_name, full_path, url = save_hashed_filename(unrarred_file, True)
+                    tid = queue_task(urfile, f_name, full_path, metadata, url, rescan=rescan)
                     task_id_list.append(tid)
             except RuntimeError as e:
                 msg = "ERROR: Failed to extract " + str(file_) + ' - ' + str(e)
@@ -530,8 +588,8 @@ def create_task():
                     HTTP_BAD_REQUEST)
     else:
         # File was not an archive to extract
-        f_name, full_path = save_hashed_filename(file_)
-        tid = queue_task(original_filename, f_name, full_path, metadata, rescan=rescan)
+        f_name, full_path, url = save_hashed_filename(file_)
+        tid = queue_task(original_filename, f_name, full_path, metadata, url, rescan=rescan)
         task_id_list = [tid]
 
     msg = {'task_ids': task_id_list}
