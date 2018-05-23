@@ -1,0 +1,55 @@
+apiVersion: apps/v1beta1 # apps/v1beta2 (1.8.0 and above) earlier versions use apps/v1beta1
+kind: Deployment
+metadata:
+  name: multiscanner-api
+spec:
+  selector:
+    matchLabels:
+      app: multiscanner-api
+  replicas: 2
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: multiscanner-api
+    spec:
+      containers:
+      - name: multiscanner-api
+        image: gcr.io/atomic-land-190509/neon:7648397
+        ports:
+        - containerPort: 8080
+        # https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+        # deployment notes
+        resources:
+          requests:
+            memory: "128Mi"
+            # cpu: "600m"
+          # limits:
+          #   memory: "128Mi"
+          #   cpu: "600m"
+        # put env variables in place
+        # env:
+        # - name: MONGO_USER
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: secrets
+        #       key: mongouser
+        # - name: MONGO_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: secrets
+        #       key: mongopassword
+        # - name: MONGO_REPLICA_SET_NAME
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: secrets
+        #       key: mongoreplicasetname
+        # - name: MONGO_SOURCE
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: secrets
+        #       key: mongosource
+        # - name: MONGO_SERVER_ADDRESSES
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: secrets
+        #       key: mongoserveraddress

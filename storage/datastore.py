@@ -120,7 +120,6 @@ class Datastore():
         # The name/ID for the new entity
         name = task_id
         # The Cloud Datastore key for the new entity
-        print self.datastore_client
         task_key = self.datastore_client.key(TaskEntityKind, name)
 
         # Prepares the new entity
