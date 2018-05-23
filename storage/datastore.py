@@ -217,7 +217,7 @@ if __name__ == '__main__':
     # print d.get_task(task_id='123')
     # print d.exists('abc')
     # print d.delete_task('123')
-    print d.get_all_tasks()
+    print(d.get_all_tasks())
     # print d.update_task('456', 'Pending_101')
 
 
