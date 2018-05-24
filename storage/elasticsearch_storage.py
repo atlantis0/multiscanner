@@ -90,7 +90,8 @@ class ElasticSearchStorage(storage.Storage):
         self.doc_type = self.config['doc_type']
         self.es = Elasticsearch(
             hosts=self.hosts,
-            http_auth=(self.user, self.secret)
+            http_auth=(self.user, self.secret),
+            timeout=30
         )
 
         # Create the index if it doesn't exist
