@@ -6,6 +6,7 @@ ENV PYTHON_VER 3.6.2
 # copy peoject files, iteratively 
 COPY . /opt/multiscanner 
 # copy configuration files
+COPY ./docker_utils/*.pem /opt/multiscanner/
 COPY ./docker_utils/*.ini /opt/multiscanner/
 COPY ./docker_utils/pwned-google-cred.json /opt/multiscanner/
 

@@ -4,6 +4,7 @@ Storage module that will interact with elasticsearch in a simple way.
 from uuid import uuid4
 
 from elasticsearch import Elasticsearch
+from ssl import create_default_context
 
 import storage
 
@@ -24,10 +25,12 @@ class BasicElasticSearchStorage(storage.Storage):
         self.secret = self.config['secret']
         self.index = self.config['index']
         self.doc_type = self.config['doc_type']
+        m_context_ = create_default_context(self.config['ssl_ca_cert'])
         self.es = Elasticsearch(
             host=self.host,
             http_auth=(self.user, self.secret),
-            timeout=30
+            timeout=30,
+            ssl_context=m_context_
         )
         self.warned_changed = False
         self.warned_renamed = False

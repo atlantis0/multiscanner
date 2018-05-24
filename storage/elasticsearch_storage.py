@@ -9,6 +9,8 @@ from uuid import uuid4
 
 import curator
 
+from ssl import create_default_context
+
 from elasticsearch import Elasticsearch, helpers
 from elasticsearch.exceptions import TransportError
 
@@ -88,10 +90,12 @@ class ElasticSearchStorage(storage.Storage):
         self.secret = self.config['secret']
         self.index = self.config['index']
         self.doc_type = self.config['doc_type']
+        m_context_ = create_default_context(self.config['ssl_ca_cert'])
         self.es = Elasticsearch(
             hosts=self.hosts,
             http_auth=(self.user, self.secret),
-            timeout=30
+            timeout=30,
+            ssl_context=m_context_
         )
 
         # Create the index if it doesn't exist
