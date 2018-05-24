@@ -27,6 +27,7 @@ class BasicElasticSearchStorage(storage.Storage):
         self.es = Elasticsearch(
             host=self.host,
             port=self.port,
+            scheme="https",
             http_auth=(self.user, self.secret)
         )
         self.warned_changed = False

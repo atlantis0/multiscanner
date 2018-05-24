@@ -91,6 +91,7 @@ class ElasticSearchStorage(storage.Storage):
         self.es = Elasticsearch(
             hosts=self.hosts,
             port=self.port,
+            scheme="https",
             http_auth=(self.user, self.secret)
         )
 
