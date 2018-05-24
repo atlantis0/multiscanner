@@ -91,6 +91,7 @@ class ElasticSearchStorage(storage.Storage):
         self.index = self.config['index']
         self.doc_type = self.config['doc_type']
         m_context_ = create_default_context(self.config['ssl_ca_cert'])
+        # or we can diable ssl :(
         self.es = Elasticsearch(
             hosts=self.hosts,
             http_auth=(self.user, self.secret),
