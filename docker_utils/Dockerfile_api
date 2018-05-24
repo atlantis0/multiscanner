@@ -21,4 +21,4 @@ RUN ./install.sh
 # attempts to connect to it
 EXPOSE 8080
 # CMD sleep 30; python utils/api.py
-python utils/api.py
+CMD python utils/api.py
