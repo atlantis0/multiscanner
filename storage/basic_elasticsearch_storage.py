@@ -20,11 +20,15 @@ class BasicElasticSearchStorage(storage.Storage):
     def setup(self):
         self.host = self.config['host']
         self.port = self.config['port']
+        self.user = self.config['user']
+        self.secret = self.config['secret']
         self.index = self.config['index']
         self.doc_type = self.config['doc_type']
         self.es = Elasticsearch(
             host=self.host,
-            port=self.port
+            port=self.port,
+            http_auth=(self.user, self.secret),
+            scheme="https"
         )
         self.warned_changed = False
         self.warned_renamed = False

@@ -84,11 +84,15 @@ class ElasticSearchStorage(storage.Storage):
             host_list.append(host.strip(' '))
         self.hosts = host_list
         self.port = self.config['port']
+        self.user = self.config['user']
+        self.secret = self.config['secret']
         self.index = self.config['index']
         self.doc_type = self.config['doc_type']
         self.es = Elasticsearch(
             hosts=self.hosts,
-            port=self.port
+            port=self.port,
+            http_auth=(self.user, self.secret),
+            scheme="https"
         )
 
         # Create the index if it doesn't exist
