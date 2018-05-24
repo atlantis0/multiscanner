@@ -20,4 +20,5 @@ RUN ./install.sh
 # the ElasticSearch container is up before the api
 # attempts to connect to it
 EXPOSE 8080
-CMD sleep 30; python utils/api.py
+# CMD sleep 30; python utils/api.py
+python utils/api.py
