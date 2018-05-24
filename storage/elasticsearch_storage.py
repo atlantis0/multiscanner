@@ -90,7 +90,6 @@ class ElasticSearchStorage(storage.Storage):
         self.doc_type = self.config['doc_type']
         self.es = Elasticsearch(
             hosts=self.hosts,
-            port=self.port,
             http_auth=(self.user, self.secret)
         )
 

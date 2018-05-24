@@ -26,7 +26,6 @@ class BasicElasticSearchStorage(storage.Storage):
         self.doc_type = self.config['doc_type']
         self.es = Elasticsearch(
             host=self.host,
-            port=self.port,
             http_auth=(self.user, self.secret)
         )
         self.warned_changed = False
