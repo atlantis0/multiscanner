@@ -94,7 +94,7 @@ class ElasticSearchStorage(storage.Storage):
         # or we can diable ssl :(
         self.es = Elasticsearch(
             hosts=self.hosts,
-            port=self.port
+            port=self.port,
             http_auth=(self.user, self.secret),
             timeout=30,
         )
