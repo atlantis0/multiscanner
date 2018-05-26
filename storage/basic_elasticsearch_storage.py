@@ -29,9 +29,9 @@ class BasicElasticSearchStorage(storage.Storage):
         # or we can diable ssl :(
         self.es = Elasticsearch(
             host=self.host,
+            port=self.port
             http_auth=(self.user, self.secret),
             timeout=30,
-            ssl_context=m_context_
         )
         self.warned_changed = False
         self.warned_renamed = False

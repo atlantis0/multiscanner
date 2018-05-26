@@ -94,9 +94,9 @@ class ElasticSearchStorage(storage.Storage):
         # or we can diable ssl :(
         self.es = Elasticsearch(
             hosts=self.hosts,
+            port=self.port
             http_auth=(self.user, self.secret),
             timeout=30,
-            ssl_context=m_context_
         )
 
         # Create the index if it doesn't exist
