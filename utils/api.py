@@ -393,7 +393,6 @@ def upload_bucket(file_, destination_name):
 def push_to_pub_sub(data_):
     # Instantiates a client
     publisher = pubsub_v1.PublisherClient()
-
     # topic path
     topic_path = publisher.topic_path(pub_sub_project, pub_sub_topic)
     # publish
@@ -414,11 +413,12 @@ def save_hashed_filename(f, zipped=False):
     full_path = os.path.join(MS_WD, file_path)
     if zipped:
         shutil.copy2(f.name, full_path)
+        # upload
+        url_ = upload_bucket(full_path, f_name)
     else:
         f.save(file_path)
-    
-    # upload to bucket
-    url_ = upload_bucket(full_path, f_name)
+        # upload to bucket
+        url_ = upload_bucket(file_path, f_name)
 
     return (f_name, full_path, url_)
 
