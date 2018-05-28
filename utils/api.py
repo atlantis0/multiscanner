@@ -469,11 +469,11 @@ def queue_task(original_filename, f_name, full_path, metadata, url, rescan=False
         #                           config=multiscanner.CONFIG)
         # we need to push data to queue, 
         data = {
-            'original_filename' : original_filename.encode('utf-8'),
-            'f_name': f_name.encode('utf-8'),
-            'full_path': full_path.encode('utf-8'),
+            'original_filename' : original_filename,
+            'f_name': f_name,
+            'full_path': full_path,
             'metadata': metadata,
-            'url': url.encode('utf-8'),
+            'url': url,
             'rescan': rescan
         }
         # push
