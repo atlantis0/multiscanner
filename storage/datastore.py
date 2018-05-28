@@ -117,10 +117,8 @@ class Datastore():
         pass
     
     def add_task(self, task_id=None, task_status='Pending', sample_id=None, timestamp=None):        
-        # The name/ID for the new entity
-        name = task_id
         # The Cloud Datastore key for the new entity
-        task_key = self.datastore_client.key(TaskEntityKind, name)
+        task_key = self.datastore_client.key(TaskEntityKind)
 
         # Prepares the new entity
         task = datastore.Entity(key=task_key)
