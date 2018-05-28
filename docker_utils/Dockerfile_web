@@ -1,13 +1,19 @@
 FROM python:3.6
-MAINTAINER Austin West awest1339
+MAINTAINER Sirack Hailu
 
 ENV PYTHON_VER 3.6.2
 
 COPY . /opt/multiscanner
 COPY ./docker_utils/*.ini /opt/multiscanner/
 
+# install dependencies
+pip install flask 
+pip install flask_cors
+
 WORKDIR /opt/multiscanner
-RUN ./install.sh
+# RUN ./install.sh
+pip install flask 
+pip install flask_cors
 
 # Run script
 CMD python web/app.py
