@@ -11,6 +11,8 @@ if MS_WD not in sys.path:
     sys.path.insert(0, os.path.join(MS_WD))
 # import multiscanner
 
+version = '1.0.0'
+
 DEFAULTCONF = {
     'HOST': "localhost",
     'PORT': 8000,
@@ -118,7 +120,7 @@ def analytics():
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html',
-                           version=multiscanner.__version__)
+                           version=version)
 
 
 @app.route('/system-health', methods=['GET'])
