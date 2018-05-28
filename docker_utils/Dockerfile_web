@@ -1,4 +1,6 @@
-FROM python:3.6
+# FROM python:3.6
+FROM python:3.6.5-jessie
+
 MAINTAINER Sirack Hailu
 
 ENV PYTHON_VER 3.6.2
@@ -6,6 +8,7 @@ ENV PYTHON_VER 3.6.2
 COPY . /opt/multiscanner
 COPY ./docker_utils/*.ini /opt/multiscanner/
 
+# install system-wide dependencies 
 apt-get install -y curl
 
 # Install requirements for Python
