@@ -1,5 +1,5 @@
-# FROM python:3.6
-FROM python:3.6.5-jessie
+FROM python:3.6
+# FROM python:3.6.5-jessie
 
 MAINTAINER Sirack Hailu
 
@@ -9,12 +9,12 @@ COPY . /opt/multiscanner
 COPY ./docker_utils/*.ini /opt/multiscanner/
 
 # install system-wide dependencies 
-apt-get install -y curl
+RUN apt-get install -y curl
 
 # Install requirements for Python
-curl -k https://bootstrap.pypa.io/get-pip.py | python
-pip install flask 
-pip install flask_cors
+RUN curl -k https://bootstrap.pypa.io/get-pip.py | python
+RUN pip install flask 
+RUN pip install flask_cors
 
 WORKDIR /opt/multiscanner
 # RUN ./install.sh
