@@ -18,8 +18,6 @@ RUN pip install flask_cors
 
 WORKDIR /opt/multiscanner
 # RUN ./install.sh
-pip install flask 
-pip install flask_cors
 
 # Run script
 CMD python web/app.py
