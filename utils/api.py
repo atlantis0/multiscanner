@@ -396,7 +396,8 @@ def push_to_pub_sub(data_):
     # topic path
     topic_path = publisher.topic_path(pub_sub_project, pub_sub_topic)
     # publish
-    publisher.publish(topic_path, data=json.dumps(data_))
+    # bytestring is the final type that should go in the wire !
+    publisher.publish(topic_path, data=json.dumps(data_).encode('utf-8'))
     print('Published messages.')
 
 def save_hashed_filename(f, zipped=False):

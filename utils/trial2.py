@@ -89,9 +89,9 @@ if __name__ == '__main__':
     # tr_path = '/Users/sirack/Desktop/tr.apk'
     # f1 = open(tr_path)
     # save_hashed_filename(tr_path)
-    # data = {'x': 'y'}
-    # push_to_pub_sub(data)
-    subscribe()
+    data = {'x': 'y'}
+    push_to_pub_sub(data)
+    # subscribe()
     # f.close()
-    time.sleep(60)
+    # time.sleep(60)
 
