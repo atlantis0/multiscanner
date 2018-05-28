@@ -33,6 +33,20 @@ DEFAULTCONF = {
     ]
 }
 
+def parse_config(config_object):
+    """Take a config object and returns it as a dictionary"""
+    return_var = {}
+    for section in config_object.sections():
+        section_dict = dict(config_object.items(section))
+        for key in section_dict:
+            try:
+                section_dict[key] = ast.literal_eval(section_dict[key])
+            except Exception as e:
+                # TODO: log exception
+                pass
+        return_var[section] = section_dict
+    return return_var
+
 app = Flask(__name__)
 
 # Finagle Flask to read config from .ini file instead of .py file
@@ -53,21 +67,6 @@ if not web_config_object.has_section('web') or not os.path.isfile(web_config_fil
 web_config = parse_config(web_config_object)['web']
 conf_tuple = namedtuple('WebConfig', web_config.keys())(*web_config.values())
 app.config.from_object(conf_tuple)
-
-
-def parse_config(config_object):
-    """Take a config object and returns it as a dictionary"""
-    return_var = {}
-    for section in config_object.sections():
-        section_dict = dict(config_object.items(section))
-        for key in section_dict:
-            try:
-                section_dict[key] = ast.literal_eval(section_dict[key])
-            except Exception as e:
-                # TODO: log exception
-                pass
-        return_var[section] = section_dict
-    return return_var
 
 @app.context_processor
 def inject_locs():
