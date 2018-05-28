@@ -6,7 +6,8 @@ ENV PYTHON_VER 3.6.2
 COPY . /opt/multiscanner
 COPY ./docker_utils/*.ini /opt/multiscanner/
 
-# install dependencies
+# Install requirements for Python
+curl -k https://bootstrap.pypa.io/get-pip.py | python
 pip install flask 
 pip install flask_cors
 
